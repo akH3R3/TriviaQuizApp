@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:trivia_quiz_app/splash_screen.dart';
+import 'package:trivia_quiz_app/screens/splash_screen.dart';
 
 class OnBoarding extends StatefulWidget {
   const OnBoarding({super.key});
@@ -11,7 +11,7 @@ class OnBoarding extends StatefulWidget {
 }
 
 class _OnBoardingState extends State<OnBoarding> {
-  PageController _controller = PageController();
+  final PageController _controller = PageController();
   bool onLastPage = false;
   @override
   Widget build(BuildContext context) {
@@ -40,15 +40,15 @@ class _OnBoardingState extends State<OnBoarding> {
         ],
       ),
       Container(
-        alignment: Alignment(0, 0.80),
+        alignment: const Alignment(0, 0.80),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             GestureDetector(
               onTap: () {
-                _controller.nextPage(duration:Duration(microseconds: 500), curve: Curves.easeIn);
+                _controller.nextPage(duration:const Duration(microseconds: 500), curve: Curves.easeIn);
               },
-              child: Text("Skip")),
+              child: const Text("Skip")),
             SmoothPageIndicator(controller: _controller, count: 2),
             onLastPage?
              GestureDetector(
@@ -57,12 +57,12 @@ class _OnBoardingState extends State<OnBoarding> {
                   return SplashScreen();
                 } )) ;
               },
-              child: Text("Done"))
+              child: const Text("Done"))
               : GestureDetector(
               onTap: () {
-                _controller.nextPage(duration:Duration(microseconds: 500), curve: Curves.easeIn); 
+                _controller.nextPage(duration:const Duration(microseconds: 500), curve: Curves.easeIn); 
               },
-              child: Text("Next")),
+              child: const Text("Next")),
           ],
         )),
 
