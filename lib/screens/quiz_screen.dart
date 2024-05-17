@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:trivia_quiz_app/services/api_service.dart';
 import 'package:trivia_quiz_app/models/question.dart';
+import 'dart:async';
 
 class QuizScreen extends StatefulWidget {
   final String category;
   final String difficulty;
 
-  const QuizScreen({required this.category, required this.difficulty});
+  QuizScreen({required this.category, required this.difficulty});
 
   @override
   _QuizScreenState createState() => _QuizScreenState();
@@ -18,25 +19,28 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
-    _futureQuestions =
-        ApiService().fetchQuestions(widget.category, widget.difficulty);
+    _futureQuestions = ApiService().fetchQuestions(widget.category, widget.difficulty);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.category} Quiz - ${widget.difficulty}'),
+        backgroundColor: Colors.brown,
+        title: Text('${widget.category} Quiz',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+        ),),
       ),
       body: FutureBuilder<List<Question>>(
         future: _futureQuestions,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No questions found.'));
+            return Center(child: Text('No questions found.'));
           } else {
             return QuizBody(questions: snapshot.data!);
           }
@@ -58,13 +62,60 @@ class QuizBody extends StatefulWidget {
 class _QuizBodyState extends State<QuizBody> {
   int _currentIndex = 0;
   int _score = 0;
+  bool _isAnswered = false;
+  bool _isCorrect = false;
+  late Timer _timer;
+  int _timeLeft = 30; // 30 seconds for each question
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timeLeft = 30;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_timeLeft > 0) {
+          _timeLeft--;
+        } else {
+          _timer.cancel();
+          _showNextQuestion();
+        }
+      });
+    });
+  }
+
+  void _showNextQuestion() {
+    if (_currentIndex < widget.questions.length - 1) {
+      setState(() {
+        _currentIndex++;
+        _isAnswered = false;
+        _startTimer();
+      });
+    } else {
+      _timer.cancel();
+      _showScoreDialog(context);
+    }
+  }
+
+  void _showPreviousQuestion() {
+    if (_currentIndex > 0) {
+      setState(() {
+        _currentIndex--;
+        _isAnswered = false;
+        _startTimer();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     Question currentQuestion = widget.questions[_currentIndex];
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.purple, Colors.blue],
           begin: Alignment.topLeft,
@@ -78,47 +129,82 @@ class _QuizBodyState extends State<QuizBody> {
           children: [
             Text(
               'Question ${_currentIndex + 1} of ${widget.questions.length}',
-              style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 10),
+            Text(
+              'Time left: $_timeLeft seconds',
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+            SizedBox(height: 20),
             Text(
               currentQuestion.question,
-              style: const TextStyle(fontSize: 18, color: Colors.white),
+              style: TextStyle(fontSize: 18, color: Colors.white),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             ...currentQuestion.answers.map((answer) {
+              Color buttonColor;
+              if (_isAnswered) {
+                if (answer == currentQuestion.correctAnswer) {
+                  buttonColor = Colors.green;
+                } else if (answer == currentQuestion.correctAnswer) {
+                  buttonColor = Colors.red;
+                } else {
+                  buttonColor = Colors.grey;
+                }
+              } else {
+                buttonColor = Colors.deepPurple;
+              }
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    if (answer == currentQuestion.correctAnswer) {
-                      _score++;
-                    }
-                    if (_currentIndex < widget.questions.length - 1) {
+                    if (!_isAnswered) {
                       setState(() {
-                        _currentIndex++;
+                        _isAnswered = true;
+                        _isCorrect = answer == currentQuestion.correctAnswer;
+                        if (_isCorrect) {
+                          _score++;
+                        }
                       });
-                    } else {
-                      _showScoreDialog(context);
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.deepPurple,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 10),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
+                    primary: buttonColor,
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                   ),
                   child: Text(
                     answer,
-                    style: const TextStyle(fontSize: 16, color: Colors.white),
+                    style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
               );
             }).toList(),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: _currentIndex > 0 ? _showPreviousQuestion : null,
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue,
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  ),
+                  child: Text('Previous', style: TextStyle(fontSize: 16, color: Colors.white)),
+                ),
+                ElevatedButton(
+                  onPressed: _isAnswered ? _showNextQuestion : null,
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue,
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  ),
+                  child: Text('Next', style: TextStyle(fontSize: 16, color: Colors.white)),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -130,16 +216,15 @@ class _QuizBodyState extends State<QuizBody> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Quiz Finished!'),
-          content:
-              Text('Your score is $_score out of ${widget.questions.length}.'),
+          title: Text('Quiz Finished!'),
+          content: Text('Your score is $_score out of ${widget.questions.length}.'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
-              child: const Text('Home'),
+              child: Text('Home'),
             ),
             TextButton(
               onPressed: () {
@@ -147,13 +232,22 @@ class _QuizBodyState extends State<QuizBody> {
                 setState(() {
                   _currentIndex = 0;
                   _score = 0;
+                  _isAnswered = false;
+                  _isCorrect = false;
+                  _startTimer();
                 });
               },
-              child: const Text('Retake'),
+              child: Text('Retake'),
             ),
           ],
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 }
