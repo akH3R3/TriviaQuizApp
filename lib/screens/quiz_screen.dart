@@ -6,7 +6,7 @@ class QuizScreen extends StatefulWidget {
   final String category;
   final String difficulty;
 
-  QuizScreen({required this.category, required this.difficulty});
+  const QuizScreen({required this.category, required this.difficulty});
 
   @override
   _QuizScreenState createState() => _QuizScreenState();
@@ -18,7 +18,8 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
-    _futureQuestions = ApiService().fetchQuestions(widget.category, widget.difficulty);
+    _futureQuestions =
+        ApiService().fetchQuestions(widget.category, widget.difficulty);
   }
 
   @override
@@ -31,11 +32,11 @@ class _QuizScreenState extends State<QuizScreen> {
         future: _futureQuestions,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No questions found.'));
+            return const Center(child: Text('No questions found.'));
           } else {
             return QuizBody(questions: snapshot.data!);
           }
@@ -63,7 +64,7 @@ class _QuizBodyState extends State<QuizBody> {
     Question currentQuestion = widget.questions[_currentIndex];
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.purple, Colors.blue],
           begin: Alignment.topLeft,
@@ -77,14 +78,17 @@ class _QuizBodyState extends State<QuizBody> {
           children: [
             Text(
               'Question ${_currentIndex + 1} of ${widget.questions.length}',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+              style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               currentQuestion.question,
-              style: TextStyle(fontSize: 18, color: Colors.white),
+              style: const TextStyle(fontSize: 18, color: Colors.white),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ...currentQuestion.answers.map((answer) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5.0),
@@ -103,12 +107,14 @@ class _QuizBodyState extends State<QuizBody> {
                   },
                   style: ElevatedButton.styleFrom(
                     primary: Colors.deepPurple,
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 10),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
                   ),
                   child: Text(
                     answer,
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
               );
@@ -124,15 +130,16 @@ class _QuizBodyState extends State<QuizBody> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Quiz Finished!'),
-          content: Text('Your score is $_score out of ${widget.questions.length}.'),
+          title: const Text('Quiz Finished!'),
+          content:
+              Text('Your score is $_score out of ${widget.questions.length}.'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
-              child: Text('Home'),
+              child: const Text('Home'),
             ),
             TextButton(
               onPressed: () {
@@ -142,7 +149,7 @@ class _QuizBodyState extends State<QuizBody> {
                   _score = 0;
                 });
               },
-              child: Text('Retake'),
+              child: const Text('Retake'),
             ),
           ],
         );

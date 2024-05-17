@@ -11,64 +11,70 @@ class HomeScreen extends StatelessWidget {
     'Maths',
   ];
 
+  HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // Disable debug banner
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.pinkAccent,
-          title: Center(child: Text('Trivia Quiz App',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),)),
+          title: const Center(
+              child: Text(
+            'Trivia Quiz App',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          )),
         ),
         body: Container(
           decoration: BoxDecoration(
-            color: Colors.green[200], // Set background color to greenAccent
+            color: Colors.green[200],
           ),
-          child: SingleChildScrollView( // Wrap the column with SingleChildScrollView
+          child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Image.asset(
-                  'lib/images/home.png', // Adjust the path according to your project structure
+                  'lib/images/home.png',
                   fit: BoxFit.cover,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ...categories.map((category) {
                   return GestureDetector(
                     onTap: () {
-                      // Navigate to the difficulty screen when category is tapped
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DifficultyScreen(category: category),
+                          builder: (context) =>
+                              DifficultyScreen(category: category),
                         ),
                       );
                     },
                     child: Card(
                       color: Colors.white,
-                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Icon(
-                              _getIconForCategory(category), // Get icon for category
+                              _getIconForCategory(category),
                               size: 40,
-                              color: Colors.indigo, // Set icon color to indigo
+                              color: Colors.indigo,
                             ),
                             Text(
                               category,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.indigo, // Set text color to indigo
+                                color: Colors.indigo,
                               ),
                             ),
                           ],
@@ -85,7 +91,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Function to get icon for each category
   IconData _getIconForCategory(String category) {
     switch (category) {
       case 'General Knowledge':

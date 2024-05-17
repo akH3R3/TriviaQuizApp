@@ -4,7 +4,7 @@ import 'package:trivia_quiz_app/screens/quiz_screen.dart';
 class DifficultyScreen extends StatelessWidget {
   final String category;
 
-  DifficultyScreen({required this.category});
+  const DifficultyScreen({super.key, required this.category});
 
   @override
   Widget build(BuildContext context) {
@@ -12,25 +12,27 @@ class DifficultyScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.orangeAccent,
         title: Center(
-          child: Text('$category Quiz',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),),
+          child: Text(
+            '$category Quiz',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.blue, Colors.green], // Gradient colors
+            colors: [Colors.blue, Colors.green],
           ),
         ),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'Choose Difficulty',
                 style: TextStyle(
                   fontSize: 24,
@@ -38,11 +40,11 @@ class DifficultyScreen extends StatelessWidget {
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               _buildDifficultyButton(context, 'Easy', Colors.green),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _buildDifficultyButton(context, 'Medium', Colors.orange),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _buildDifficultyButton(context, 'Hard', Colors.red),
             ],
           ),
@@ -51,27 +53,28 @@ class DifficultyScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDifficultyButton(BuildContext context, String difficulty, Color color) {
+  Widget _buildDifficultyButton(
+      BuildContext context, String difficulty, Color color) {
     return ElevatedButton(
       onPressed: () {
-        // Navigate to the quiz screen when difficulty is selected
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => QuizScreen(category: category, difficulty: difficulty),
+            builder: (context) =>
+                QuizScreen(category: category, difficulty: difficulty),
           ),
         );
       },
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-        primary: color, // Button background color
+        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+        primary: color,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
       ),
       child: Text(
         difficulty,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
           color: Colors.white,

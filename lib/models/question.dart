@@ -8,7 +8,7 @@ class Question {
   factory Question.fromJson(Map<String, dynamic> json) {
     List<String> answers = List<String>.from(json['incorrect_answers']);
     answers.add(json['correct_answer']);
-    answers.shuffle(); // Shuffle answers to randomize their order
+    answers.shuffle(); 
 
     return Question(
       question: json['question'],

@@ -8,24 +8,24 @@ class ResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Quiz Results')),
+      appBar: AppBar(title: const Text('Quiz Results')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Congratulations!', style: TextStyle(fontSize: 24)),
-            Text('Your Score: $score', style: TextStyle(fontSize: 20)),
+            const Text('Congratulations!', style: TextStyle(fontSize: 24)),
+            Text('Your Score: $score', style: const TextStyle(fontSize: 20)),
             ElevatedButton(
               onPressed: () {
                 Navigator.popUntil(context, ModalRoute.withName('/'));
               },
-              child: Text('Go to Home'),
+              child: const Text('Go to Home'),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Retake Quiz'),
+              child: const Text('Retake Quiz'),
             ),
           ],
         ),
